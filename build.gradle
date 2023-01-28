@@ -1,0 +1,95 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '2.7.8'
+	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'com.ewerk.gradle.plugins.querydsl' version '1.0.10'
+	id 'war'
+
+}
+
+group = 'org.zerock'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+
+	// mysql
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation group: 'mysql', name: 'mysql-connector-java', version: '8.0.28'
+
+	//querydsl
+	implementation 'com.querydsl:querydsl-jpa:5.0.0'
+	annotationProcessor "com.querydsl:querydsl-apt:5.0.0"
+}
+
+
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
+
+
+/*********************************************************************************/
+
+/*변경된 Gradle Annotation processor 설정*/
+// [Annotation Processor 설정](http://honeymon.io/tech/2020/07/09/gradle-annotation-processor-with-querydsl.html)
+//configure(querydslProjects) {
+//	apply plugin: "io.spring.dependency-management"
+//
+//	dependencies {
+//		compile("com.querydsl:querydsl-core")
+//		compile("com.querydsl:querydsl-jpa")
+//
+//		annotationProcessor("com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jpa") // querydsl JPAAnnotationProcessor 사용 지정
+//		annotationProcessor("jakarta.persistence:jakarta.persistence-api") // java.lang.NoClassDefFoundError(javax.annotation.Entity) 발생 대응
+//		annotationProcessor("jakarta.annotation:jakarta.annotation-api") // java.lang.NoClassDefFoundError (javax.annotation.Generated) 발생 대응
+//	}
+//	// clean 태스크와 cleanGeneatedDir 태스크 중 취향에 따라서 선택하세요.
+//	/** clean 태스크 실행시 QClass 삭제 */
+////	clean {
+////		delete file('src/main/generated') // 인텔리제이 Annotation processor 생성물 생성위치
+////	}
+//
+//	/**
+//	 * 인텔리제이 Annotation processor 에 생성되는 'src/main/generated' 디렉터리 삭제
+//	 */
+//	task cleanGeneatedDir(type: Delete) { // 인텔리제이 annotation processor 가 생성한 Q클래스가 clean 태스크로 삭제되는 게 불편하다면 둘 중에 하나를 선택
+//		delete file('src/main/generated')
+//	}
+//}
+
+/*********************************************************************************/
+
+//[스프링부트 2.6이상 Querydsl5.0 ~ 에러 해결하기](https://wangtak.tistory.com/m/44)
+// querydsl 세팅 시작
+def querydslDir = "$buildDir/generated/querydsl"
+querydsl {
+	jpa = true
+	querydslSourcesDir = querydslDir
+}
+sourceSets {
+	main.java.srcDir querydslDir
+}
+configurations {
+	querydsl.extendsFrom compileClasspath
+}
+compileQuerydsl {
+	options.annotationProcessorPath = configurations.querydsl
+}
+// querydsl 세팅 끝
