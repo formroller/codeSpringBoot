@@ -60,17 +60,42 @@ public class GuestbookController {
     }
 
     /* 방명록 조회 */
-//    @GetMapping("/read")
-//    public void read(long gno, @ModelAttribute("requestDTO") PageResultDTO requestDTO, Model model){
-//        log.info("gno: "+gno);
-//        GuestbookDTO dto = service.read(gno);
-//        model.addAttribute("dto",dto);
-//    }
-
-    @GetMapping("/read")
+    @GetMapping({"/read", "/modify"})
     public void read(long gno, @ModelAttribute("requestDTO") PageRequestDTO requestDTO, Model model){
         log.info("gno : "+gno);
         GuestbookDTO dto = service.read(gno);
         model.addAttribute("dto", dto);
+    }
+
+    // 게시물 삭제
+    @PostMapping("/remove")
+    public String remove(long gno, RedirectAttributes redirectAttributes){
+
+        log.info("gno: "+gno);
+        service.remove(gno);
+        redirectAttributes.addFlashAttribute("msg",gno);
+        return "redirect:/guestbook/list";
+    }
+
+    // 게시물 수정
+    @PostMapping("/modify")
+    public String modify(GuestbookDTO dto, @ModelAttribute("requestDTO") PageRequestDTO requestDTO,
+                         RedirectAttributes redirectAttributes){
+        // GuestbookDTO - 수정해야 하는 글의 정보
+        // PageRequestDTO - 기존 페이지 정보 유지
+        // RedirectAttribute - 리다이렉트로 이동
+
+
+        log.info("post modify......................");
+        log.info("dto : "+dto);
+
+        service.modify(dto);
+
+        redirectAttributes.addAttribute("page", requestDTO.getPage());
+        redirectAttributes.addAttribute("gno", dto.getGno());
+        redirectAttributes.addAttribute("type", requestDTO.getType());
+        redirectAttributes.addAttribute("gno", requestDTO.getKeyword());
+
+        return "redirect:/guestbook/read";
     }
 }

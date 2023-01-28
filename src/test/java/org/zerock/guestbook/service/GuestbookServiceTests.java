@@ -53,4 +53,27 @@ public class GuestbookServiceTests {
         resultDTO.getPageList().forEach(i -> System.out.println(i));
 
     }
+
+    @Test //섬색 조건 테스트
+    public void testSearch(){
+        PageRequestDTO pageRequestDTO = PageRequestDTO.builder()
+                .page(1)
+                .size(10)
+                .type("tc") // 검색 조건 t,c,w,tc,twc..
+                .keyword("한글")
+                .build();
+
+        PageResultDTO<GuestbookDTO, Guestbook> resultDTO = service.getList(pageRequestDTO);
+
+        System.out.println("Prev : " + resultDTO.isPrev());
+        System.out.println("Next : " + resultDTO.isNext());
+        System.out.println("Total : "+resultDTO.getTotalPage());
+
+        System.out.println("-".repeat(50));
+        for(GuestbookDTO guestbookDTO : resultDTO.getDtoList()){
+            System.out.println(guestbookDTO);
+        }
+        System.out.println("=".repeat(50));
+        resultDTO.getPageList().forEach(i-> System.out.println(i));
+    }
 }
