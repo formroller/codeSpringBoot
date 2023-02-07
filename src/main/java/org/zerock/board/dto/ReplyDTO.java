@@ -19,6 +19,6 @@ public class ReplyDTO {
     private String text;
     private String replyer;
     private Long bno; // 게시글 번호
-    private LocalDateTime reDate, modDate;
+    private LocalDateTime regDate, modDate;
 
 }

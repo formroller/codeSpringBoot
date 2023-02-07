@@ -120,12 +120,13 @@
 
 
             <!--검색창 이벤트-->
-            var searchForm = $("#searchForm");
-            $('.btn-search').click(function(e){
+           var searchForm = $("#searchForm");
+
+            $('.btn-search').click(function(e){ // 새롭게 선택된 검색 타입과 키워드로 1페이지를 검색
                 searchForm.submit();
             });
 
-            $('.btn-clear').click(function(e){
+            $('.btn-clear').click(function(e){ // 모든 검색과 관련된 내용을 삭제하고 검색이 없는 목록 페이지를 호출
                 searchForm.empty().submit();
             });
         </script>

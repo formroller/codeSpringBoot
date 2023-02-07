@@ -39,14 +39,140 @@
 
         <a th:href="@{/board/modify(bno=${dto.bno}, page=${requestDTO.page},
         type=${requestDTO.type}, keyword=${requestDTO.keyword})}">
-            <button type="button" class="btn btn-primary">Modify</button>
+            <button type="button" class="btn btn-primary">수정</button>
         </a>
 
-        <a th:href="@{/board/list(page=${requestDTO.page},
-        type=${requestDTO.type}, keyword=${requestDTO.keyword}}">
-            <button type="button" class="btn btn-info">List</button>
+        <a th:href="@{/board/list(page = ${requestDTO.page}, type=${requestDTO.type}, keyword=${requestDTO.keyword})}">
+            <button type="button" class="btn btn-info">목록</button>
         </a>
 
+        <!--댓글 추가 modal-->
+        <div class="modal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <div class="modal-header">
+                    <h5 class="modal-title">댓글 작성</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="replyText" placeholder="댓글 입력">
+                    </div>
+
+                    <div class="form-group">
+                        <input class="form-control" type="text" name="replyer" placeholder="작성자">
+                        <input type="hidden" name="rno">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger ReplyRemove">삭제</button>
+                    <button type="button" class="btn btn-warning ReplyModify">수정</button>
+                    <button type="button" class="btn btn-primary replySave">저장</button>
+                    <button type="button" class="btn btn-outline-secondary replyClose" data-dismiss="modal">닫기</button>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="mt-4">
+                <h5><span class="badge badge-info addReply">댓글쓰기</span></h5>
+                <h5><span class="badge badge-secondary replyCount">댓글 수 <small>([[${dto.replyCount}]])</small></span></h5>
+            </div>
+            <div class="list-group replyList"></div>
+        </div>
+
+        <script th:inline="javascript">
+            // 조회 화면에서 댓글 처리
+            $(document).ready(function(){
+                var bno = [[${dto.bno}]];
+                var listGroup = $(".replyList");
+
+                $(".replyCount").click(function(){
+                    $.getJSON('/replies/board/'+bno, function(arr){
+                        console.log(arr);
+                    }) // end getJSON
+                }) // end click
+
+                // 댓글이 추가될 영역
+                var listGroup = $(".replyList");
+
+                // 날짜 처리 위한 함수
+                function formatTime(str){
+                    var date = new Date(str);
+
+                    return date.getFullYear() + '/' +
+                        (date.getMonth() + 1) + '/' +
+                        date.getDate() + ' ' +
+                        date.getHours() + ':' +
+                        date.getMinutes();
+                }
+
+                // 특정 게시글의 댓글 처리하는 함수
+                function loadJSONData(){
+                    $.getJSON('/replies/board/'+bno, function(arr){
+                        console.log(arr);
+                        var str = "";
+
+                        $('.replyCount').html(" 댓글 수 ("+arr.length+")");
+
+                        $.each(arr, function(idx, reply){
+                            console.log(reply);
+                            str += '    <div class="card-body" data-rno="'+reply.rno+'"><b>'+reply.rno +'</b>';
+                            str += '    <h5 class="card-title">'+reply.text+'</h5>';
+                            str += '    <h6 class="card-subtitle mb-2 text-muted">'+reply.replyer+'</h6>';
+                            str += '    <p class="card-text">' + formatTime(reply.regDate)+'</p>';
+                            str += '    </div>';
+                        })
+                        listGroup.html(str);
+                    });
+                }
+
+                $(".replyCount").click(function(){
+                    loadJSONData();
+                }) // end click
+
+                // 모달창
+                var modal = $('.modal');
+                $(".addReply").click(function(){
+                    modal.modal('show');
+
+                    // 댓글 입력 부분 초기화
+                    $('input[name="replyText"]').val('');
+                    $('input[name="replyer"]').val('');
+
+                    $(".modal-footer .btn").hide(); // 모달 내 모든 버튼 안보이도록
+                    $(".replySave, replyClose").show(); // 필요한 버튼들만 보이도록
+                })
+
+                // js 객체를 JSON 형태로 처리
+                $(".replySave").click(function(){
+                    var reply = {
+                        bno: bno,
+                        test: $('input[name="replyText"]').val(),
+                        replyer: $('input[name="replyer"]').val()
+                    }
+                    console.log(reply);
+
+                    $.ajax({
+                        url: '/replies/',
+                        method: 'post',
+                        data: JSON.stringify(reply),
+                        contentType: 'application/json; charset=utf-8',
+                        dataType: 'json',
+                        success: function(data){
+                            console.log(data);
+
+                            var newRno = parseInt(data);
+
+                            alert(newRno + "번 댓글이 등록되었습니다.")
+                            modal.modal('hide');
+                            loadJSONData();
+                        }
+                    })
+                });
+            });
+        </script>
 
     </th:block>
 </th:block>
