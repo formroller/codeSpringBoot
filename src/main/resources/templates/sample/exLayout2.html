@@ -1,0 +1,24 @@
+<!Doctype html>
+<html lang="eng" xmlns:th="https://thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>fragment-target</title>
+</head>
+<body>
+
+<th:block th:replace="~{/fragment/fragment3::target(~{this::#ulFirst}, ~{this::#ulSecond})}">
+    <ul id="ulFirst">
+        <li>AAAA</li>
+        <li>BBBB</li>
+        <li>CCCC</li>
+    </ul>
+
+    <ul id="ulSecond">
+        <li>1111</li>
+        <li>2222</li>
+        <li>3333</li>
+    </ul>
+</th:block>
+
+</body>
+</html>
