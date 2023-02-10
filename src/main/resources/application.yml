@@ -5,6 +5,7 @@ spring:
     url: jdbc:mysql://localhost:3306/review
     username: review
     password: review
+
   jpa:
     hibernate:
       ddl-auto: update
@@ -13,5 +14,19 @@ spring:
         dialect: org.hibernate.dialect.MySQL5InnoDBDialect
         format_sql: true
     show-sql: true
+
   thymeleaf:
     cache: false
+
+  servlet:
+    multipart:
+      enabled: true  # 파일 업로드 가능 여부
+      location: /Users/yj/IdeaProjects/Book/Chapter4/img # 업로드된 파일의 임시 저장 경로
+      max-request-size: 30MB # 한 번에 최대 업로드 가능 용량
+      max-file-size: 30MB # 파일 하나의 최대 크기
+
+org:
+  zerock:
+    upload:
+      path: /Users/yj/IdeaProjects/Book/Chapter4/upload_image  # 업로드된 파일 저장할 경로
+      
