@@ -29,6 +29,10 @@ dependencies {
 
 	// mysql
 	implementation group:'mysql', name: 'mysql-connector-java', version: '8.0.28'
+
+	// Thumbnailator 추가
+	implementation group: 'net.coobird', name: 'thumbnailator', version: '0.4.12'
+
 }
 
 tasks.named('test') {
